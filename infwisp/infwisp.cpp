@@ -140,7 +140,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
             }
         }
-        if (HasAnw == 0) {//有了可以永久化的结果就按调件输出语句
+        if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
                 file.open(File, ios::out | ios::app);
