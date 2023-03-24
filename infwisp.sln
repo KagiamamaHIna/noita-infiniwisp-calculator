@@ -25,8 +25,8 @@ Global
 		{61452689-16DA-4376-8313-894932F3A9D3}.Release|ARM.Build.0 = Release|Win32
 		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x64.ActiveCfg = Release|x64
 		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x64.Build.0 = Release|x64
-		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.ActiveCfg = Release|ARM
-		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.Build.0 = Release|ARM
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.ActiveCfg = Release|Win32
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
