@@ -44,12 +44,9 @@ int getNumber(const char *speaky) { //自定义一个询问并获取数字的函
 }
 const char* getChar(const char* speaky) { //自定义一个询问并获取字符串的函数
     char charNum[127] = { '\0' };
-    while (true)
-    {
-        printf(speaky);
-        scanf_s("%s", charNum);
-        return charNum;
-    }
+    printf(speaky);
+    scanf_s("%s", charNum);
+    return charNum;
 }
 
 int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个询问并获取数字的函数
