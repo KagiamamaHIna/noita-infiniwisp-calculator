@@ -4,8 +4,10 @@
 
 using namespace std;
 using std::string;
+clock_t ClockStart, ClockEnd;
+ofstream file;
 
-void writeFile(//提升可读性的换行
+/*void writeFile(//提升可读性的换行
     const char* contentChar1,int contentChar2,
     const char* contentChar3,int contentChar4,
     const char* contentChar5,int contentChar6,
@@ -19,7 +21,7 @@ void writeFile(//提升可读性的换行
     file << contentChar1 << contentChar2 << contentChar3 << contentChar4 << contentChar5 << contentChar6 << contentChar7 << contentChar8 << contentChar9 << contentChar10 << contentChar11 << contentChar12 << endl;
     file.close();
     return;
-}
+}*/
 
 bool isNumber(const string& str) //判断你输入的字符串是否由纯数字组成
 {
@@ -72,11 +74,12 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    printf("永久法术计算工具 v1.0.2\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
-    int startNum,endNum,modMax,addLT,pinLT,decLT, helLT,arcLT,splLT,YouNeedNum,closeNum,isSaveOrNo,isFileCustOrNo,HasAnw = 0;
+    printf("永久法术计算工具 v1.0.3\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,closeNum,isSaveOrNo,isFileCustOrNo = 0;
     const char* File = "infwispList.txt";
     while (true)
     {
+        int HasAnw = 0;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
         while (true){
             endNum = getNumber("输入投射物存在时间范围的终止值:");
@@ -100,7 +103,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         helLT = getModMax("如果不需要计算螺旋魔弹输入n,需要计算输入y:", modMax);
         arcLT = getModMax("如果不需要计算相位输入n,需要计算输入y:", modMax);
         splLT = getModMax("如果不需要计算连锁输入n,需要计算输入y:", modMax);
-        ofstream file;
+        if (isSaveOrNo) {
         file.open(File, ios::out | ios::app);
         file << "本次输入的存在时间范围为:" << startNum << "到" << endNum << ",总修正上限为"<< modMax << endl;
         file << "蓝表上限为:" << addLT << endl;
@@ -109,29 +112,43 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         file << "相位上限为:" << arcLT << endl;
         file << "红表上限为:" << decLT << endl;
         file << "连锁上限为:" << splLT << endl;
-        file.close();
-        for (int calNum = startNum; calNum <= endNum; calNum++) {//穷举计算
-            for (int add = 0; add <= addLT; add++)
+        }
+        unsigned long int cycleAll = 1;
+        unsigned long int LT[6] = { addLT ,pinLT , helLT , arcLT , decLT , splLT };
+        int count = 0;
+        for (int i = 0; i <= 6; i++) {
+            if (LT[i] != 0){ //排除0的选项，计算总共的循环次数
+                cycleAll *= LT[i];
+            }
+            else{
+                count++;
+            }
+            if (count == 6) {
+                cycleAll = 0;
+            }
+        }
+        //穷举计算
+        ClockStart = clock();
+        for (int add = 0; add <= addLT; add++)
             {
-                for (int pin = 0; pin <= pinLT; pin++)
+            for (int pin = 0; pin <= pinLT; pin++)
+            {
+                for (int hel = 0; hel <= helLT; hel++)
                 {
-                    for (int hel = 0; hel <= helLT; hel++)
-                    {
-                        for (int arc = 0; arc <= arcLT; arc++)
+                    for (int arc = 0; arc <= arcLT; arc++)
+                     {
+                        for (int dec = 0; dec <= decLT; dec++)
                         {
-                            for (int dec = 0; dec <= decLT; dec++)
+                            for (int spl = 0; spl <= splLT; spl++)
                             {
-                                for (int spl = 0; spl <= splLT; spl++)
-                                {
-                                    YouNeedNum = (75*add+25*pin+50*hel+80*arc-dec*42-spl*30) + calNum;
-                                    if (YouNeedNum == -1) {
-                                        HasAnw++;//如果有了可以永久化的结果就赋值为1
-                                        if (isSaveOrNo) {
-                                            writeFile("蓝表数量:", add, ",乒乓数量:", pin, ",螺旋魔弹数量:", hel, ",相位弧度数量:", arc, ",红表数量:", dec, ",连锁法术数量:", spl,File);
-                                        }
-                                        else{
-                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n",add,pin,hel,arc,dec,spl);
-                                        }
+                                YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
+                                if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {
+                                    HasAnw++;//如果有了可以永久化的结果就赋值为1
+                                    if (isSaveOrNo) {
+                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
+                                    }
+                                    else{
+                                    printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n",add,pin,hel,arc,dec,spl);
                                     }
                                 }
                             }
@@ -140,19 +157,22 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
             }
         }
+        ClockEnd = clock();
+        double time = double(ClockEnd - ClockStart) / CLOCKS_PER_SEC;
+        printf("共循环:%llu，共耗时：%.5fs\n",cycleAll, time);
         if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
-                file.open(File, ios::out | ios::app);
                 file << "本次穷举没有可以永久化的结果:("<< endl;
                 file.close();
             }
         }
         else {
             printf("这次穷举有可以永久化的结果，结果数量为:%d，你输入的存在时间范围为: %d 到 %d \n\n", HasAnw, startNum, endNum);
-            file.open(File, ios::out | ios::app);
-            file << "共计"<< HasAnw << "个结果" << endl;
-            file.close();
+            if (isSaveOrNo) {
+                file << "共计" << HasAnw << "个结果" << endl;
+                file.close();
+            }
         }
         closeNum = getModMax("如果要继续计算请输入y, 退出输入n:",0,1);
         if (closeNum) {
