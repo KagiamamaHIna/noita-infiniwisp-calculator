@@ -7,20 +7,26 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "infwisp", "infwisp\infwisp.
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|ARM.ActiveCfg = Debug|ARM
+		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|ARM.Build.0 = Debug|ARM
 		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|x64.ActiveCfg = Debug|x64
 		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|x64.Build.0 = Debug|x64
 		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|x86.ActiveCfg = Debug|Win32
 		{61452689-16DA-4376-8313-894932F3A9D3}.Debug|x86.Build.0 = Debug|Win32
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|ARM.ActiveCfg = Release|Win32
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|ARM.Build.0 = Release|Win32
 		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x64.ActiveCfg = Release|x64
 		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x64.Build.0 = Release|x64
-		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.ActiveCfg = Release|Win32
-		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.Build.0 = Release|Win32
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.ActiveCfg = Release|ARM
+		{61452689-16DA-4376-8313-894932F3A9D3}.Release|x86.Build.0 = Release|ARM
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
