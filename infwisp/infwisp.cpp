@@ -32,7 +32,6 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
     std::string stringNum = "0";
     std::string y = "y";//定义两个用于比较的变量
     std::string n = "n";
-    int a = 0;
     while (true)
     {
         printf(speaky);
