@@ -160,7 +160,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                 YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
                                 if (YouNeedNum < 0 && out) {
                                     test = startNum / 30;
-                                    if (test == 1) { out = 0; }//如果不加这个判断在特定条件下会陷入死循环
+                                    if (test == 1) { out = 0; }
+                                    if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
                                     spl = test - 1;
                                     continue;
                                 }
@@ -194,6 +195,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                 if (YouNeedNum < 0 && out) {
                                     test = startNum / 42;
                                     if (test == 1) { out = 0; }
+                                    if (startNum % 42 == 0) { out = 0; }
                                     dec = test - 1;
                                     continue;
                                 }
@@ -227,6 +229,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                 if (YouNeedNum < 0 && out) {
                                     test = startNum / 30;
                                     if (test == 1) { out = 0; }
+                                    if (startNum % 30 == 0) { out = 0; }
                                     spl = test - 1;
                                     continue;
                                 }
