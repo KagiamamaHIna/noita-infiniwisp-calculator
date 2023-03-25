@@ -81,13 +81,14 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.4");
-    printf("永久法术计算工具v1.0.4\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.5");
+    printf("永久法术计算工具v1.0.5\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,isSaveOrNo,isFileCustOrNo = 0;
-    int closeNum = 1;
+    int closeNum,test = 1;
     const char* File = "infwispList.txt";
     while (true)
     {
+        int out = 1;
         int HasAnw = 0;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
         while (true){
@@ -126,7 +127,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         file << "相位上限为:" << arcLT << endl;
         file << "红表上限为:" << decLT << endl;
         file << "连锁上限为:" << splLT << endl;
-        }
+        }/*
         unsigned long int cycleAll = 1;
         unsigned long int LT[6] = { addLT ,pinLT , helLT , arcLT , decLT , splLT };
         int count = 0;
@@ -140,9 +141,10 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             if (count == 6) {//如果全是0，那么代表没有循环
                 cycleAll = 0;
             }
-        }
-        //穷举计算
-        ClockStart = clock();
+        }*/
+        //穷举计算 一共四种方案
+        ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
+        if (splLT != 0 && decLT != 0){
         for (int add = 0; add <= addLT; add++)
         {
             for (int pin = 0; pin <= pinLT; pin++)
@@ -156,6 +158,12 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                             for (int spl = 0; spl <= splLT; spl++)
                             {
                                 YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
+                                if (YouNeedNum < 0 && out) {
+                                    test = startNum / 30;
+                                    if (test == 1) { out = 0; }//如果不加这个判断在特定条件下会陷入死循环
+                                    spl = test - 1;
+                                    continue;
+                                }
                                 if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                     HasAnw++;//如果有了可以永久化的结果自增
                                     if (isSaveOrNo) {
@@ -170,10 +178,76 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     }
                 }
             }
+        }}
+        else if (splLT == 0 && decLT != 0) {//方案2 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
+            for (int add = 0; add <= addLT; add++)
+            {
+                for (int pin = 0; pin <= pinLT; pin++)
+                {
+                    for (int hel = 0; hel <= helLT; hel++)
+                    {
+                        for (int arc = 0; arc <= arcLT; arc++)
+                        {
+                            for (int dec = 0; dec <= decLT; dec++)
+                            {
+                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42);
+                                if (YouNeedNum < 0 && out) {
+                                    test = startNum / 42;
+                                    if (test == 1) { out = 0; }
+                                    dec = test - 1;
+                                    continue;
+                                }
+                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                    HasAnw++;//如果有了可以永久化的结果自增
+                                    if (isSaveOrNo) {
+                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
+                                    }
+                                    else {
+                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, splLT);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
+        else if (splLT != 0 && decLT == 0) {//方案3 只计算减去时间修正中的红表，计算红表的最小值，然后直接赋值跳过无用循环
+            for (int add = 0; add <= addLT; add++)
+            {
+                for (int pin = 0; pin <= pinLT; pin++)
+                {
+                    for (int hel = 0; hel <= helLT; hel++)
+                    {
+                        for (int arc = 0; arc <= arcLT; arc++)
+                        {
+                            for (int spl = 0; spl <= splLT; spl++)
+                            {
+                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30);
+                                if (YouNeedNum < 0 && out) {
+                                    test = startNum / 30;
+                                    if (test == 1) { out = 0; }
+                                    spl = test - 1;
+                                    continue;
+                                }
+                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                    HasAnw++;//如果有了可以永久化的结果自增
+                                    if (isSaveOrNo) {
+                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
+                                    }
+                                    else {
+                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, decLT, spl);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }//如果条件均不满足，那么就不循环了，直接结束，也就是没有减存在时间的法术的时候
         ClockEnd = clock();
-        double time = double(ClockEnd - ClockStart) / CLOCKS_PER_SEC;
-        printf("共循环:%llu，共耗时：%.5fs\n",cycleAll, time);
+        float time = float(ClockEnd - ClockStart) / CLOCKS_PER_SEC;
+        printf("共耗时：%.5fs\n", time);
         if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
