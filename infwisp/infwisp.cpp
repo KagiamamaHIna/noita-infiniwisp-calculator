@@ -81,11 +81,12 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.5.1");
-    printf("永久法术计算工具v1.0.5.1\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.5.2");
+    printf("永久法术计算工具v1.0.5.2\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,isSaveOrNo,isFileCustOrNo = 0;
     int closeNum,test = 1;
     const char* File = "infwispList.txt";
+    int Count = 0;
     while (true)
     {
         int out = 1;
@@ -155,6 +156,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                      {
                         for (int dec = 0; dec <= decLT; dec++)
                         {
+                            if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
+                            Count = 0;
                             for (int spl = 0; spl <= splLT; spl++)
                             {
                                 YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
@@ -162,7 +165,9 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     test = startNum / 30;
                                     if (test == 1) { out = 0; }
                                     if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
+                                    if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
                                     spl = test - 1;
+                                    Count++;
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -189,6 +194,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     {
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
+                            if (Count > 1) { out = 1; }
+                            Count = 0;
                             for (int dec = 0; dec <= decLT; dec++)
                             {
                                 YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42);
@@ -196,7 +203,9 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     test = startNum / 42;
                                     if (test == 1) { out = 0; }
                                     if (startNum % 42 == 0) { out = 0; }
+                                    if (Count > 1) { out = 0; }
                                     dec = test - 1;
+                                    Count++;
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -223,6 +232,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     {
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
+                            if (Count > 1) { out = 1; }
+                            Count = 0;
                             for (int spl = 0; spl <= splLT; spl++)
                             {
                                 YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30);
@@ -230,7 +241,9 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     test = startNum / 30;
                                     if (test == 1) { out = 0; }
                                     if (startNum % 30 == 0) { out = 0; }
+                                    if (Count > 1) { out = 0; }
                                     spl = test - 1;
+                                    Count++;
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
