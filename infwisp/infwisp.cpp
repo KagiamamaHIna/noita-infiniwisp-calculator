@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <windows.h>
 
 using namespace std;
 using std::string;
@@ -38,10 +39,16 @@ int getNumber(const char *speaky) { //自定义一个询问并获取数字的函
         printf(speaky);
         scanf_s("%s", charNum);
         std::string stringNum = charNum;
-        if (isNumber(stringNum)) {
-            return std::stoi(stringNum);//获取正确的整数
+        if (stringNum.length() < 10) //数字长度判断，避免异常
+        {
+            if (isNumber(stringNum)) {
+                return std::stoi(stringNum);//获取正确的整数
+            }
+            printf("参数不为纯数字，请重新输入！\n");
         }
-        printf("参数不为纯数字，请重新输入！\n");
+        else{
+            printf("数字过大(>999999999)，请重新输入！\n");
+        }
     }
 }
 const char* getChar(const char* speaky) { //自定义一个询问并获取字符串的函数
@@ -51,7 +58,7 @@ const char* getChar(const char* speaky) { //自定义一个询问并获取字符
     return charNum;
 }
 
-int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个询问并获取数字的函数
+int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个询问并返回特定数字的函数
     char charNum[2] = { '\0' };
     std::string stringNum = "0";
     std::string y = "y";//定义两个用于比较的变量
@@ -74,8 +81,10 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    printf("永久法术计算工具 v1.0.3\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
-    int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,closeNum,isSaveOrNo,isFileCustOrNo = 0;
+    SetConsoleTitle(L"永久法术计算工具v1.0.4");
+    printf("永久法术计算工具v1.0.4\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,isSaveOrNo,isFileCustOrNo = 0;
+    int closeNum = 1;
     const char* File = "infwispList.txt";
     while (true)
     {
@@ -91,7 +100,12 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         modMax = getNumber("输入所有影响存在时间修正的上限数:");
         isSaveOrNo = getModMax("如果不需要将数值存储到文件中输入n,需要则输入y:",1,0);
         if (isSaveOrNo) {
-            isFileCustOrNo = getModMax("如果不需要自定义文件路径输入n,需要则输入y:", 1, 0);
+            if (closeNum == 0 && isFileCustOrNo == 1){ //判断是否自定义过路径并且已经运行过一遍的代码
+                isFileCustOrNo = getModMax("如果不需要更改文件路径输入n,需要则输入y:", 1, 0);
+            }
+            else {
+                isFileCustOrNo = getModMax("如果不需要自定义文件路径输入n,需要则输入y:", 1, 0);
+            }
             if (isFileCustOrNo) {
                 File = getChar("请输入文件路径:");
             }
@@ -121,16 +135,16 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 cycleAll *= LT[i];
             }
             else{
-                count++;
+                count++;//累加器
             }
-            if (count == 6) {
+            if (count == 6) {//如果全是0，那么代表没有循环
                 cycleAll = 0;
             }
         }
         //穷举计算
         ClockStart = clock();
         for (int add = 0; add <= addLT; add++)
-            {
+        {
             for (int pin = 0; pin <= pinLT; pin++)
             {
                 for (int hel = 0; hel <= helLT; hel++)
@@ -142,8 +156,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                             for (int spl = 0; spl <= splLT; spl++)
                             {
                                 YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
-                                if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {
-                                    HasAnw++;//如果有了可以永久化的结果就赋值为1
+                                if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                    HasAnw++;//如果有了可以永久化的结果自增
                                     if (isSaveOrNo) {
                                         file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
                                     }
