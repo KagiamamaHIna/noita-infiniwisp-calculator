@@ -33,12 +33,15 @@ bool isNumber(const string& str) //判断你输入的字符串是否由纯数字
     return true;
 }
 
-bool isZero(const char* charNum) {
-    const char *charZero = "0";
-    unsigned int out = 0;
-    for (int i = 0; i <= strlen(charNum); i++) {
-        out = strcmp(charZero, charNum);
-        if (out) return true;
+bool isZero(std::string stringNum) {
+    std::string cmpStr = "0";//初始化
+    int count = 0;
+    for (int i = 0; i <= stringNum.length(); i++) {//遍历字符
+        cmpStr = stringNum.substr(i, 1);//截取字符
+        if (cmpStr == "0") {//当符合条件时count自增
+            count++;
+            if (count == stringNum.length()) return true;//长度如果所有的数字都为0，那么就返回true
+        }
     }
     return false;
 }
@@ -51,14 +54,14 @@ int getNumber(const char *speaky) { //自定义一个询问并获取数字的函
         printf(speaky);
         scanf_s("%s", charNum);
         std::string stringNum = charNum;
-        if (stringNum.length() < 10 && isNumber(charNum) || isZero(charNum)) //数字长度判断和零的判断，避免异常
+        if (stringNum.length() < 10 && isNumber(charNum) ||isZero(stringNum)) //数字长度判断和零的判断，避免异常
         {
             if (isNumber(stringNum)) {
                 return std::stoi(stringNum);//获取正确的整数
             }
             printf("参数不为纯数字，请重新输入！\n");
         }
-        else if (!isNumber(charNum)) {
+        else if (!isNumber(charNum)) {//字符串过长不显示数字过大
             printf("参数不为纯数字，请重新输入！\n");
         }
         else{
@@ -76,17 +79,15 @@ const char* getChar(const char* speaky) { //自定义一个询问并获取字符
 int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个询问并返回特定数字的函数
     char charNum[2] = { '\0' };
     std::string stringNum = "0";
-    std::string y = "y";//定义两个用于比较的变量
-    std::string n = "n";
     while (true)
     {
         printf(speaky);
         scanf_s("%s", charNum);//先用scanf_s获得值
         std::string stringNum = charNum;//然后赋值给string
-        if (stringNum == y) {
+        if (stringNum == "y") {
             return modMax;
         }
-        else if (stringNum == n) {
+        else if (stringNum == "n") {
             return outInt;
         }
         else {
