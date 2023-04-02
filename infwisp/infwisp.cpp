@@ -46,7 +46,7 @@ bool isZero(std::string stringNum) {
     return false;
 }
 
-int getNumber(const char *speaky) { //自定义一个询问并获取数字的函数
+int getNumber(const char* speaky) { //自定义一个询问并获取数字的函数
     std::string stringNum = "0";
     char charNum[127] = { '\0' };
     while (true)
@@ -54,7 +54,7 @@ int getNumber(const char *speaky) { //自定义一个询问并获取数字的函
         printf(speaky);
         scanf_s("%s", charNum);
         std::string stringNum = charNum;
-        if (stringNum.length() < 10 && isNumber(charNum) ||isZero(stringNum)) //数字长度判断和零的判断，避免异常
+        if (stringNum.length() < 10 && isNumber(charNum) || isZero(stringNum)) //数字长度判断和零的判断，避免异常
         {
             if (isNumber(stringNum)) {
                 return std::stoi(stringNum);//获取正确的整数
@@ -64,7 +64,7 @@ int getNumber(const char *speaky) { //自定义一个询问并获取数字的函
         else if (!isNumber(charNum)) {//字符串过长不显示数字过大
             printf("参数不为纯数字，请重新输入！\n");
         }
-        else{
+        else {
             printf("数字过大(>999999999)，请重新输入！\n");
         }
     }
@@ -76,7 +76,7 @@ const char* getChar(const char* speaky) { //自定义一个询问并获取字符
     return charNum;
 }
 
-int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个询问并返回特定数字的函数
+int getModMax(const char* speaky, int modMax, int outInt = 0) { //自定义一个询问并返回特定数字的函数
     char charNum[2] = { '\0' };
     std::string stringNum = "0";
     while (true)
@@ -99,17 +99,16 @@ int getModMax(const char* speaky,int modMax,int outInt = 0) { //自定义一个�
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
     SetConsoleTitle(L"永久法术计算工具v1.0.5.4");//修改控制台标题
     printf("永久法术计算工具v1.0.5.4\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
-    int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,isSaveOrNo,isFileCustOrNo = 0;
-    int closeNum = 1,test,test2 = 1;
+    int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
+    int closeNum, test = 1;
     const char* File = "infwispList.txt";
     int Count = 0;
     while (true)
     {
-        int isJump = 0;
         int out = 1;
         int HasAnw = 0;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
-        while (true){
+        while (true) {
             endNum = getNumber("输入投射物存在时间范围的终止值:");
             if (startNum <= endNum) { //判断终止值不能小于起始值
                 break;
@@ -117,9 +116,9 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             printf("终止值不能小于起始值。\n");
         }
         modMax = getNumber("输入所有影响存在时间修正的上限数:");
-        isSaveOrNo = getModMax("如果不需要将数值存储到文件中输入n,需要则输入y:",1,0);
+        isSaveOrNo = getModMax("如果不需要将数值存储到文件中输入n,需要则输入y:", 1, 0);
         if (isSaveOrNo) {
-            if (closeNum == 0 && isFileCustOrNo == 1){ //判断是否自定义过路径并且已经运行过一遍的代码
+            if (closeNum == 0 && isFileCustOrNo == 1) { //判断是否自定义过路径并且已经运行过一遍的代码
                 isFileCustOrNo = getModMax("如果不需要更改文件路径输入n,需要则输入y:", 1, 0);
             }
             else {
@@ -137,14 +136,14 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         arcLT = getModMax("如果不需要计算相位输入n,需要计算输入y:", modMax);
         splLT = getModMax("如果不需要计算连锁输入n,需要计算输入y:", modMax);
         if (isSaveOrNo) {
-        file.open(File, ios::out | ios::app);
-        file << "本次输入的存在时间范围为:" << startNum << "到" << endNum << ",总修正上限为"<< modMax << endl;
-        file << "蓝表上限为:" << addLT << endl;
-        file << "乒乓上限为:" << pinLT << endl;
-        file << "螺旋魔弹上限为:" << helLT << endl;
-        file << "相位上限为:" << arcLT << endl;
-        file << "红表上限为:" << decLT << endl;
-        file << "连锁上限为:" << splLT << endl;
+            file.open(File, ios::out | ios::app);
+            file << "本次输入的存在时间范围为:" << startNum << "到" << endNum << ",总修正上限为" << modMax << endl;
+            file << "蓝表上限为:" << addLT << endl;
+            file << "乒乓上限为:" << pinLT << endl;
+            file << "螺旋魔弹上限为:" << helLT << endl;
+            file << "相位上限为:" << arcLT << endl;
+            file << "红表上限为:" << decLT << endl;
+            file << "连锁上限为:" << splLT << endl;
         }/*
         unsigned long int cycleAll = 1;
         unsigned long int LT[6] = { addLT ,pinLT , helLT , arcLT , decLT , splLT };
@@ -162,44 +161,39 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         }*/
         //穷举计算 一共四种方案
         ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
-        if (splLT != 0 && decLT != 0){
-        for (int add = 0; add <= addLT; add++)
-        {
-            for (int pin = 0; pin <= pinLT; pin++)
+        if (splLT != 0 && decLT != 0) {
+            for (int add = 0; add <= addLT; add++)
             {
-                for (int hel = 0; hel <= helLT; hel++)
+                for (int pin = 0; pin <= pinLT; pin++)
                 {
-                    for (int arc = 0; arc <= arcLT; arc++)
-                     {
-                        for (int dec = 0; dec <= decLT; dec++)
+                    for (int hel = 0; hel <= helLT; hel++)
+                    {
+                        for (int arc = 0; arc <= arcLT; arc++)
                         {
-                            if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
-                            Count = 0;
-                            for (int spl = 0; spl <= splLT; spl++)
+                            for (int dec = 0; dec <= decLT; dec++)
                             {
-                                YouNeedNum = -(75*add+25*pin+50*hel+80*arc-dec*42-spl*30);
-                                if (YouNeedNum < 0 && out) {
-                                    test = startNum / 30;
-                                    if (test == 1) { out = 0; }
-                                    if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
-                                    if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
-                                    spl = test - 1;
-                                    Count++;
-                                    test2 = decLT * 42 + splLT * 30;
-                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
-                                        test = startNum / 42;//计算合适数量
-                                        isJump++;
-                                        goto JumpOut;
+                                if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
+                                Count = 0;
+                                for (int spl = 0; spl <= splLT; spl++)
+                                {
+                                    YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 - spl * 30);
+                                    if (YouNeedNum < 0 && out) {
+                                        test = startNum / 30;
+                                        if (test == 1) { out = 0; }
+                                        if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
+                                        if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
+                                        spl = test - 1;
+                                        Count++;
+                                        continue;
                                     }
-                                    continue;
-                                }
-                                if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                    HasAnw++;//如果有了可以永久化的结果自增
-                                    if (isSaveOrNo) {
-                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
-                                    }
-                                    else{
-                                    printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n",add,pin,hel,arc,dec,spl);
+                                    if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                        HasAnw++;//如果有了可以永久化的结果自增
+                                        if (isSaveOrNo) {
+                                            file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
+                                        }
+                                        else {
+                                            printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, spl);
+                                        }
                                     }
                                 }
                             }
@@ -207,7 +201,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     }
                 }
             }
-        }}
+        }
         else if (splLT == 0 && decLT != 0) {//方案2 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
             for (int add = 0; add <= addLT; add++)
             {
@@ -229,11 +223,6 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (Count > 1) { out = 0; }
                                     dec = test - 1;
                                     Count++;
-                                    test2 = decLT * 42;
-                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
-                                        isJump++;
-                                        goto JumpOut;
-                                    }
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -272,11 +261,6 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (Count > 1) { out = 0; }
                                     spl = test - 1;
                                     Count++;
-                                    test2 = splLT * 30;
-                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
-                                        isJump++;
-                                        goto JumpOut;
-                                    }
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -293,23 +277,14 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     }
                 }
             }
-        }
-        else {
-            test = startNum / 30;
-            isJump++;//提示
         }//如果条件均不满足，那么就不循环了，直接结束，也就是没有减存在时间的法术的时候
-        JumpOut:ClockEnd = clock();
+        ClockEnd = clock();
         float time = float(ClockEnd - ClockStart) / 1000;//我将原本的换成了1000作为常量，因为我听说其他情况机子跑编译的情况下可能不为1000
-        if (isJump) {
-            printf("共耗时：0.00000s，你输入的修正上限数太少！\n建议输入大于这个数量的修正上限:%d\n", test);
-        }
-        else {
-            printf("共耗时：%.5fs\n", time);
-        }
+        printf("共耗时：%.5fs\n", time);
         if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
-                file << "本次穷举没有可以永久化的结果:("<< endl;
+                file << "本次穷举没有可以永久化的结果:(" << endl;
                 file.close();
             }
         }
@@ -320,7 +295,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 file.close();
             }
         }
-        closeNum = getModMax("如果要继续计算请输入y, 退出输入n:",0,1);
+        closeNum = getModMax("如果要继续计算请输入y, 退出输入n:", 0, 1);
         if (closeNum) {
             break;
         }
