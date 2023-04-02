@@ -40,7 +40,7 @@ bool isZero(std::string stringNum) {
         cmpStr = stringNum.substr(i, 1);//截取字符
         if (cmpStr == "0") {//当符合条件时count自增
             count++;
-            if (count == stringNum.length()) return true;//长度如果所有的数字都为0，那么就返回true
+            if (count == stringNum.length()) return true;//长度 如果所有的数字都为0，那么就返回true
         }
     }
     return false;
@@ -100,11 +100,12 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
     SetConsoleTitle(L"永久法术计算工具v1.0.5.4");//修改控制台标题
     printf("永久法术计算工具v1.0.5.4\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum,endNum,modMax,addLT,pinLT,decLT,helLT,arcLT,splLT,YouNeedNum,isSaveOrNo,isFileCustOrNo = 0;
-    int closeNum,test = 1;
+    int closeNum = 1,test,test2 = 1;
     const char* File = "infwispList.txt";
     int Count = 0;
     while (true)
     {
+        int isJump = 0;
         int out = 1;
         int HasAnw = 0;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
@@ -184,6 +185,12 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
                                     spl = test - 1;
                                     Count++;
+                                    test2 = decLT * 42 + splLT * 30;
+                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
+                                        test = startNum / 42;//计算合适数量
+                                        isJump++;
+                                        goto JumpOut;
+                                    }
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum+1 && YouNeedNum <= endNum+1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -222,6 +229,11 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (Count > 1) { out = 0; }
                                     dec = test - 1;
                                     Count++;
+                                    test2 = decLT * 42;
+                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
+                                        isJump++;
+                                        goto JumpOut;
+                                    }
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -260,6 +272,11 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (Count > 1) { out = 0; }
                                     spl = test - 1;
                                     Count++;
+                                    test2 = splLT * 30;
+                                    if (!(test2 >= startNum + 1 && test2 <= endNum + 1)) {
+                                        isJump++;
+                                        goto JumpOut;
+                                    }
                                     continue;
                                 }
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
@@ -276,10 +293,19 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     }
                 }
             }
+        }
+        else {
+            test = startNum / 30;
+            isJump++;//提示
         }//如果条件均不满足，那么就不循环了，直接结束，也就是没有减存在时间的法术的时候
-        ClockEnd = clock();
+        JumpOut:ClockEnd = clock();
         float time = float(ClockEnd - ClockStart) / 1000;//我将原本的换成了1000作为常量，因为我听说其他情况机子跑编译的情况下可能不为1000
-        printf("共耗时：%.5fs\n", time);
+        if (isJump) {
+            printf("共耗时：0.00000s，你输入的修正上限数太少！\n建议输入大于这个数量的修正上限:%d\n", test);
+        }
+        else {
+            printf("共耗时：%.5fs\n", time);
+        }
         if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
