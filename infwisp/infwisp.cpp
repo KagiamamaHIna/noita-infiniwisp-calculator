@@ -3,6 +3,8 @@
 #include <string>
 #include <windows.h>
 #include <time.h>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 using std::string;
@@ -35,17 +37,19 @@ bool isNumber(const string& str) //判断你输入的字符串是否由纯数字
 
 bool isZero(std::string stringNum) {
     std::string cmpStr = "0";//初始化
+    std::string ThisStr = "0";//初始化
     int count = 0;
     for (int i = 0; i <= stringNum.length(); i++) {//遍历字符
         cmpStr = stringNum.substr(i, 1);//截取字符
-        if (cmpStr == "0") {//当符合条件时count自增
-            count++;
-            if (count == stringNum.length()) return true;//长度 如果所有的数字都为0，那么就返回true
+        if (cmpStr != "0" && !count) {
+            count = 1;//当检测到第一个有效数字时更改这个变量来进行字符串存储
+        }
+        if (count && cmpStr != "0") {
+            ThisStr = ThisStr + cmpStr;
         }
     }
-    return false;
+    if (ThisStr.length() < 11) return true; else return false;//大小判断
 }
-
 int getNumber(const char* speaky) { //自定义一个询问并获取数字的函数
     std::string stringNum = "0";
     char charNum[127] = { '\0' };
@@ -97,8 +101,8 @@ int getModMax(const char* speaky, int modMax, int outInt = 0) { //自定义一�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.5.4");//修改控制台标题
-    printf("永久法术计算工具v1.0.5.4\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.6");//修改控制台标题
+    printf("永久法术计算工具v1.0.6\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
     int closeNum, test = 1;
     const char* File = "infwispList.txt";
@@ -107,6 +111,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
     {
         int out = 1;
         int HasAnw = 0;
+        int isYes = 0;
+        int YouShouldNum;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
         while (true) {
             endNum = getNumber("输入投射物存在时间范围的终止值:");
@@ -144,32 +150,36 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             file << "相位上限为:" << arcLT << endl;
             file << "红表上限为:" << decLT << endl;
             file << "连锁上限为:" << splLT << endl;
-        }/*
-        unsigned long int cycleAll = 1;
-        unsigned long int LT[6] = { addLT ,pinLT , helLT , arcLT , decLT , splLT };
-        int count = 0;
-        for (int i = 0; i <= 6; i++) {
-            if (LT[i] != 0){ //排除0的选项，计算总共的循环次数
-                cycleAll *= LT[i];
-            }
-            else{
-                count++;//累加器
-            }
-            if (count == 6) {//如果全是0，那么代表没有循环
-                cycleAll = 0;
-            }
-        }*/
+        }
         //穷举计算 一共四种方案
-        ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
+        StartCalc:ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
         if (splLT != 0 && decLT != 0) {
+            YouShouldNum = startNum / 42;
+            if (decLT < YouShouldNum) {
+                isYes = 1;
+                goto calcEnd;
+            }
+            int PreNumI = -decLT * 42 - splLT * 30 + endNum;//预计算，减少性能消耗
             for (int add = 0; add <= addLT; add++)
             {
+                if (add * 75 + PreNumI >= 75) {//如果条件满足，即增加时间修正过大的话，就直接跳过下列所有结果直接输出，因为往下计算均是无效结果，>=75是为了减少一次减法运算带来的性能消耗
+                    goto calcEnd;
+                }
                 for (int pin = 0; pin <= pinLT; pin++)
                 {
+                    if (addLT == 0 && pin * 25 + PreNumI >= 25) {
+                        goto calcEnd;
+                    }
                     for (int hel = 0; hel <= helLT; hel++)
                     {
+                        if (addLT == 0 && pinLT == 0 && hel * 50 + PreNumI >= 50) {
+                            goto calcEnd;
+                        }
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
+                            if (addLT == 0 && pinLT == 0 && helLT == 0 && arc * 80 + PreNumI >= 80) {
+                                goto calcEnd;
+                            }
                             for (int dec = 0; dec <= decLT; dec++)
                             {
                                 if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
@@ -202,15 +212,33 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
             }
         }
-        else if (splLT == 0 && decLT != 0) {//方案2 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
+        else if (splLT == 0 && decLT != 0) {//方案2 只计算减去时间修正中的红表，计算红表的最小值，然后直接赋值跳过无用循环
+            YouShouldNum = startNum / 42;
+            if (decLT < YouShouldNum) {
+                isYes = 1;
+                goto calcEnd;
+            }
+            int PreNumI = -decLT * 42 + endNum;//预计算，减少性能消耗
             for (int add = 0; add <= addLT; add++)
             {
+                if (add * 75 + PreNumI >= 75) {
+                    goto calcEnd;
+                }
                 for (int pin = 0; pin <= pinLT; pin++)
                 {
+                    if (addLT == 0 && pin * 25 + PreNumI >= 25) {
+                        goto calcEnd;
+                    }
                     for (int hel = 0; hel <= helLT; hel++)
                     {
+                        if (addLT == 0 && pinLT == 0 && hel * 50 + PreNumI >= 50) {
+                            goto calcEnd;
+                        }
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
+                            if (addLT == 0 && pinLT == 0 && helLT == 0 && arc * 80 + PreNumI >= 80) {
+                                goto calcEnd;
+                            }
                             if (Count > 1) { out = 1; }
                             Count = 0;
                             for (int dec = 0; dec <= decLT; dec++)
@@ -240,15 +268,33 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
             }
         }
-        else if (splLT != 0 && decLT == 0) {//方案3 只计算减去时间修正中的红表，计算红表的最小值，然后直接赋值跳过无用循环
+        else if (splLT != 0 && decLT == 0) {//方案3 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
+            YouShouldNum = startNum / 30;
+            if (decLT < YouShouldNum) {
+                isYes = 1;
+                goto calcEnd;
+            }
+            int PreNumI = -decLT * 30 + endNum;//预计算，减少性能消耗
             for (int add = 0; add <= addLT; add++)
             {
+                if (add * 75 + PreNumI >= 75) {
+                    goto calcEnd;
+                }
                 for (int pin = 0; pin <= pinLT; pin++)
                 {
+                    if (addLT == 0 && pin * 25 + PreNumI >= 25) {
+                        goto calcEnd;
+                    }
                     for (int hel = 0; hel <= helLT; hel++)
                     {
+                        if (addLT == 0 && pinLT == 0 && hel * 50 + PreNumI >= 50) {
+                            goto calcEnd;
+                        }
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
+                            if (addLT == 0 && pinLT == 0 && helLT == 0 && arc * 80 + PreNumI >= 80) {
+                                goto calcEnd;
+                            }
                             if (Count > 1) { out = 1; }
                             Count = 0;
                             for (int spl = 0; spl <= splLT; spl++)
@@ -278,9 +324,14 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
             }
         }//如果条件均不满足，那么就不循环了，直接结束，也就是没有减存在时间的法术的时候
-        ClockEnd = clock();
+        calcEnd:ClockEnd = clock();
         float time = float(ClockEnd - ClockStart) / 1000;//我将原本的换成了1000作为常量，因为我听说其他情况机子跑编译的情况下可能不为1000
+        if (isYes) {
+            printf("共耗时：0.00000s，你输入的修正数过少，建议在等条件的情况下输入%d\n", YouShouldNum);
+        }
+        else{
         printf("共耗时：%.5fs\n", time);
+        }
         if (HasAnw == 0) {//有了可以永久化的结果就按条件输出语句
             printf("这次穷举没有可以永久化的结果，你输入的存在时间范围为: %d 到 %d \n\n", startNum, endNum);
             if (isSaveOrNo) {
