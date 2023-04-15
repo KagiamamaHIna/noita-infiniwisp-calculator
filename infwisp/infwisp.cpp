@@ -101,10 +101,10 @@ int getModMax(const char* speaky, int modMax, int outInt = 0) { //自定义一�
 }
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.6");//修改控制台标题
-    printf("永久法术计算工具v1.0.6\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.6.1");//修改控制台标题
+    printf("永久法术计算工具v1.0.6.1\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
-    int closeNum, test = 1;
+    int closeNum = 1, test = 1;
     const char* File = "infwispList.txt";
     int Count = 0;
     while (true)
@@ -152,7 +152,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             file << "连锁上限为:" << splLT << endl;
         }
         //穷举计算 一共四种方案
-        StartCalc:ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
+        ClockStart = clock(); //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
         if (splLT != 0 && decLT != 0) {
             YouShouldNum = startNum / 42;
             if (decLT < YouShouldNum) {
