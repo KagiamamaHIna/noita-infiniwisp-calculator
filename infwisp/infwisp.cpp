@@ -270,7 +270,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         }
         else if (splLT != 0 && decLT == 0) {//方案3 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
             YouShouldNum = startNum / 30;
-            if (decLT < YouShouldNum) {
+            if (splLT < YouShouldNum) {
                 isYes = 1;
                 goto calcEnd;
             }
