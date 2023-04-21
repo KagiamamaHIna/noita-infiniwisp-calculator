@@ -421,7 +421,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
     {
         int threadNum2[2] = { 0,0 };//第一个存总数，第二个存余数
         int out = 1;
-        int HasAnw = 0;
+        HasAnw = 0;
         int isYes = 0;
         int YouShouldNum;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
