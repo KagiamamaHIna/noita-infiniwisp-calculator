@@ -410,6 +410,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
     int closeNum = 1, test = 1;
     int Count = 0;
     int threadNum = cfg.getParameter("threadNum");//为了减少性能消耗，获取一次赋值给一个变量
+    const char* File2 = File;
     fileCace = vector<fstream>(threadNum - 1);//初始化
     while (true)
     {
@@ -437,7 +438,8 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 isFileCustOrNo = getModMax("如果不需要自定义文件路径输入n,需要则输入y:", 1, 0);
             }
             if (isFileCustOrNo) {
-                File = getChar("请输入文件路径:");
+                File2 = getChar("请输入文件路径:");
+                File = File2;
             }
             printf("tips:接下来将不会在控制台内打印数据，而是将数据保存入根路径/%s 文件中\n", File);
         }
