@@ -404,8 +404,8 @@ vector<thread> T;//动态存储线程
 vector<int> TNum;//动态存储分配后的参数
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.8");//修改控制台标题
-    printf("永久法术计算工具v1.0.8\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.8.1");//修改控制台标题
+    printf("永久法术计算工具v1.0.8.1\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
     int closeNum = 1, test = 1;
     int Count = 0;
