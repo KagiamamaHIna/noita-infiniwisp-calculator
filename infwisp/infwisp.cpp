@@ -11,9 +11,10 @@
 using namespace std;
 using std::string;
 clock_t ClockStart, ClockEnd;
-ofstream file;
-
+fstream file;
+vector<fstream> fileCace;
 mutex mtx;
+const char* File = "infwispList.txt";
 
 /*void writeFile(//提升可读性的换行
     const char* contentChar1,int contentChar2,
@@ -115,7 +116,7 @@ public:
             cfg.open(cfgFile, ios::out | ios::app);
             cfg << "threadNum{1}" << endl;
             cfg << "//更改线程数量，一线程为主线程，二线程为主线程+子线程，如此类推下去" << endl;
-            cfg << "//警告：本功能可能不稳定会导致崩溃，而且有可能性能提升不明显，如果为1那么就只有主线程运算" << endl;
+            cfg << "//警告：本功能开启后强烈建议启动写入文件，不然有可能性能提升不明显，如果为1那么就只有主线程运算" << endl;
             cfg << "//所以，拿来玩玩倒是可以就对了（）" << endl;
             printf("已检测到你没有配置文件，已经自动生成了一个默认的配置文件\n");
             cfg.close();
@@ -249,7 +250,7 @@ private:
 
 atomic<int> HasAnw = 0;
 
-void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT) {
+void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT,int ID) {
     int out = 1;
     int YouNeedNum;
     int Count = 0;
@@ -299,9 +300,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                     HasAnw++;//如果有了可以永久化的结果自增
                                     if (isSaveOrNo) {
-                                        mtx.lock();
-                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
-                                        mtx.unlock();
+                                        fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
                                     }
                                     else {
                                         mtx.lock();
@@ -343,9 +342,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                             if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                 HasAnw++;//如果有了可以永久化的结果自增
                                 if (isSaveOrNo) {
-                                    mtx.lock();
-                                    file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
-                                    mtx.unlock();
+                                    fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
                                 }
                                 else {
                                     mtx.lock();
@@ -386,9 +383,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                             if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                 HasAnw++;//如果有了可以永久化的结果自增
                                 if (isSaveOrNo) {
-                                    mtx.lock();
-                                    file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
-                                    mtx.unlock();
+                                    fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
                                 }
                                 else {
                                     mtx.lock();
@@ -409,20 +404,20 @@ vector<thread> T;//动态存储线程
 vector<int> TNum;//动态存储分配后的参数
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.7");//修改控制台标题
-    printf("永久法术计算工具v1.0.7\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.8");//修改控制台标题
+    printf("永久法术计算工具v1.0.8\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
     int closeNum = 1, test = 1;
-    const char* File = "infwispList.txt";
     int Count = 0;
     int threadNum = cfg.getParameter("threadNum");//为了减少性能消耗，获取一次赋值给一个变量
-    //int cacheWrite = cfg.getParameter("cacheWrite");
+    fileCace = vector<fstream>(threadNum - 1);//初始化
     while (true)
     {
         int threadNum2[2] = { 0,0 };//第一个存总数，第二个存余数
         int out = 1;
         HasAnw = 0;
         int isYes = 0;
+        int threadCaceID = -1;
         int YouShouldNum;
         startNum = getNumber("输入投射物存在时间范围的起始值:");
         while (true) {
@@ -536,19 +531,22 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 T = vector<thread>(threadNum - 1); //初始化线程数量，主线程也算一个，所以-1
                 int count2[2] = { TNum[0],0 };
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
+                    threadCaceID++;
+                    string FileID = File + to_string(threadCaceID);
+                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     //cout << count2[1] << "/0:" << count2[0] << endl;//debug用
                 }
@@ -593,9 +591,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                     if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                         HasAnw++;//如果有了可以永久化的结果自增
                                         if (isSaveOrNo) {
-                                            mtx.lock();
                                             file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
-                                            mtx.unlock();
                                         }
                                         else {
                                             mtx.lock();
@@ -682,19 +678,22 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 T = vector<thread>(threadNum - 1); //初始化线程数量，主线程也算一个，所以-1
                 int count2[2] = { TNum[0],0 };
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
+                    threadCaceID++;
+                    string FileID = File + to_string(threadCaceID);
+                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                 }
             }
@@ -724,9 +723,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                     HasAnw++;//如果有了可以永久化的结果自增
                                     if (isSaveOrNo) {
-                                        mtx.lock();
                                         file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
-                                        mtx.unlock();
                                     }
                                     else {
                                         mtx.lock();
@@ -812,19 +809,22 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 T = vector<thread>(threadNum - 1); //初始化线程数量，主线程也算一个，所以-1
                 int count2[2] = { TNum[0],0 };
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
+                    threadCaceID++;
+                    string FileID = File + to_string(threadCaceID);
+                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                 }
             }
@@ -854,9 +854,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                                 if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
                                     HasAnw++;//如果有了可以永久化的结果自增
                                     if (isSaveOrNo) {
-                                        mtx.lock();
                                         file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
-                                        mtx.unlock();
                                     }
                                     else {
                                         mtx.lock();
@@ -872,8 +870,20 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         }//如果条件均不满足，那么就不循环了，直接结束，也就是没有减存在时间的法术的时候
         calcEnd:ClockEnd = clock();
         if (threadNum > 1 && !isYes){
+             char buf[512] = {'\0'};
              for (int i = 0; i < T.size(); i++) {
                   T[i].join();//释放线程
+             }
+             for (int i = 0; i < threadNum-1; i++) {//合并文件
+                 string FileID = File + to_string(i);
+                 fileCace[i].close();//关闭
+                 fileCace[i].open(FileID, ios::in);//以读的形式重新打开
+                 while (fileCace[i].getline(buf, sizeof(buf))) {//按行读取文件
+                     file << buf << endl;//写入数据
+                 }
+                 fileCace[i].close();//现在关闭文件
+                 const char* FileC = FileID.c_str();
+                 remove(FileC);//删除文件
              }
         }
         float time = float(ClockEnd - ClockStart) / 1000;//我将原本的换成了1000作为常量，因为我听说其他情况机子跑编译的情况下可能不为1000
