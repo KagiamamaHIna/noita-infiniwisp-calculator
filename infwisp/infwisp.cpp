@@ -40,9 +40,9 @@ bool isNumber(const string& str) //判断你输入的字符串是否由纯数字
     return true;
 }
 
-bool isZero(std::string stringNum) {
-    std::string cmpStr = "0";//初始化
-    std::string ThisStr = "0";//初始化
+bool isZero(string stringNum) {
+    string cmpStr = "0";//初始化
+    string ThisStr = "0";//初始化
     int count = 0;
     for (int i = 0; i <= stringNum.length(); i++) {//遍历字符
         cmpStr = stringNum.substr(i, 1);//截取字符
@@ -56,13 +56,13 @@ bool isZero(std::string stringNum) {
     if (ThisStr.length() < 11) return true; else return false;//大小判断
 }
 int getNumber(const char* speaky) { //自定义一个询问并获取数字的函数
-    std::string stringNum = "0";
+    string stringNum = "0";
     char charNum[127] = { '\0' };
     while (true)
     {
         printf(speaky);
         scanf_s("%s", charNum);
-        std::string stringNum = charNum;
+        string stringNum = charNum;
         if (stringNum.length() < 10 && isNumber(charNum) || isZero(stringNum)) //数字长度判断和零的判断，避免异常
         {
             if (isNumber(stringNum)) {
@@ -78,7 +78,7 @@ int getNumber(const char* speaky) { //自定义一个询问并获取数字的函
         }
     }
 }
-const char* getChar(const char* speaky) { //自定义一个询问并获取字符串的函数
+string getChar(const char* speaky) { //自定义一个询问并获取字符串的函数
     char charNum[127] = { '\0' };
     printf(speaky);
     scanf_s("%s", charNum);
@@ -125,7 +125,7 @@ public:
         while (cfg.getline(buf, sizeof(buf)))//按行读文件 这里存入参数的原理为，将参数线性存入向量cfgStr和向量cfgNumInt1/2中，然后循环到符合其中一个时，这时候累加器的参数写入向量下标进行寻址时就等同于该参数的其他数据了
         {
             if (!(buf[0] == '/' && buf[1] == '/') && !buf[0] == '\0') { //判断注释
-                if (!(strchr(buf, '{') && strchr(buf, '}')) || (strchr(buf, '}') - buf) - (strchr(buf, '{') - buf) == 1) {//如果配置文件语法不正确报错，只报一次，最右边的条件判断语句是判断是否只是单纯的{}组合
+                if (!(strchr(buf, '{') && strchr(buf, '}')) || (strchr(buf, '}') - buf) - (strchr(buf, '{') - buf) == 1 || (strchr(buf, '}') - buf) - (strchr(buf, '{') - buf) <= -1) {//如果配置文件语法不正确报错，只报一次，右边的第一条的判断语句是判断是否只是单纯的{}组合，第二条是 是否反过来
                     if (decideSyntax){
                         cerr << "检查到不符合配置文件语法的内容，已跳过" << endl;
                         decideSyntax = false;
@@ -272,7 +272,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
         add2 = mod;
     }
     if (splLT != 0 && decLT != 0) {
-        int PreNumI = -decLT * 42 - splLT * 30 + endNum;//预计算，减少性能消耗
+        //int PreNumI = -decLT * 42 - splLT * 30 + endNum;//预计算，减少性能消耗
         for (int add = add2; add <= addLT; add++)
         {
             for (int pin = pin2; pin <= pinLT; pin++)
@@ -316,7 +316,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
         }
     }
     else if (splLT == 0 && decLT != 0) {//方案2 只计算减去时间修正中的红表，计算红表的最小值，然后直接赋值跳过无用循环
-        int PreNumI = -decLT * 42 + endNum;//预计算，减少性能消耗
+        //int PreNumI = -decLT * 42 + endNum;//预计算，减少性能消耗
         for (int add = add2; add <= addLT; add++)
         {
             for (int pin = pin2; pin <= pinLT; pin++)
@@ -357,7 +357,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
         }
     }
     else if (splLT != 0 && decLT == 0) {//方案3 只计算减去时间修正中的连锁，计算连锁的最小值，然后直接赋值跳过无用循环
-        int PreNumI = -decLT * 30 + endNum;//预计算，减少性能消耗
+        //int PreNumI = -decLT * 30 + endNum;//预计算，减少性能消耗
         for (int add = add2; add <= addLT; add++)
         {
             for (int pin = pin2; pin <= pinLT; pin++)
@@ -404,13 +404,13 @@ vector<thread> T;//动态存储线程
 vector<int> TNum;//动态存储分配后的参数
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.8.1");//修改控制台标题
-    printf("永久法术计算工具v1.0.8.1\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.8.3");//修改控制台标题
+    printf("永久法术计算工具v1.0.8.3\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
     int closeNum = 1, test = 1;
     int Count = 0;
     int threadNum = cfg.getParameter("threadNum");//为了减少性能消耗，获取一次赋值给一个变量
-    const char* File2 = File;
+    string File2 = File;
     fileCace = vector<fstream>(threadNum - 1);//初始化
     while (true)
     {
@@ -439,7 +439,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             }
             if (isFileCustOrNo) {
                 File2 = getChar("请输入文件路径:");
-                File = File2;
+                File = File2.c_str();
             }
             printf("tips:接下来将不会在控制台内打印数据，而是将数据保存入根路径/%s 文件中\n", File);
         }
@@ -535,7 +535,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
                     threadCaceID++;
                     string FileID = File + to_string(threadCaceID);
-                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
+                    if (isSaveOrNo) fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
@@ -682,7 +682,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
                     threadCaceID++;
                     string FileID = File + to_string(threadCaceID);
-                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
+                    if (isSaveOrNo) fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
@@ -813,7 +813,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 for (int i = 0; i < T.size(); i++) {//9 9 8 8(34)
                     threadCaceID++;
                     string FileID = File + to_string(threadCaceID);
-                    fileCace[threadCaceID].open(FileID, ios::out | ios::app);
+                    if (isSaveOrNo) fileCace[threadCaceID].open(FileID, ios::out | ios::app);
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
@@ -876,16 +876,17 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
              for (int i = 0; i < T.size(); i++) {
                   T[i].join();//释放线程
              }
-             for (int i = 0; i < threadNum-1; i++) {//合并文件
-                 string FileID = File + to_string(i);
-                 fileCace[i].close();//关闭
-                 fileCace[i].open(FileID, ios::in);//以读的形式重新打开
-                 while (fileCace[i].getline(buf, sizeof(buf))) {//按行读取文件
-                     file << buf << endl;//写入数据
-                 }
-                 fileCace[i].close();//现在关闭文件
-                 const char* FileC = FileID.c_str();
-                 remove(FileC);//删除文件
+             if (isSaveOrNo){
+                for (int i = 0; i < threadNum-1; i++) {//合并文件
+                    string FileID = File + to_string(i);
+                    fileCace[i].close();//关闭
+                    fileCace[i].open(FileID, ios::in);//以读的形式重新打开
+                    while (fileCace[i].getline(buf, sizeof(buf))) {//按行读取文件
+                        file << buf << endl;//写入数据
+                    }
+                    fileCace[i].close();//现在关闭文件
+                    remove(FileID.c_str());//删除文件
+                }
              }
         }
         float time = float(ClockEnd - ClockStart) / 1000;//我将原本的换成了1000作为常量，因为我听说其他情况机子跑编译的情况下可能不为1000
