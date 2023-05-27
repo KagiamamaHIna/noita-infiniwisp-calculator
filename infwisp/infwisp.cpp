@@ -61,7 +61,7 @@ int getNumber(const char* speaky) { //自定义一个询问并获取数字的函
     while (true)
     {
         printf(speaky);
-        scanf_s("%s", charNum);
+        scanf_s("%s", charNum,127);
         string stringNum = charNum;
         if (stringNum.length() < 10 && isNumber(charNum) || isZero(stringNum)) //数字长度判断和零的判断，避免异常
         {
@@ -81,7 +81,7 @@ int getNumber(const char* speaky) { //自定义一个询问并获取数字的函
 string getChar(const char* speaky) { //自定义一个询问并获取字符串的函数
     char charNum[127] = { '\0' };
     printf(speaky);
-    scanf_s("%s", charNum);
+    scanf_s("%s", charNum,127);
     return charNum;
 }
 
@@ -91,7 +91,7 @@ int getModMax(const char* speaky, int modMax, int outInt = 0) { //自定义一�
     while (true)
     {
         printf(speaky);
-        scanf_s("%s", charNum);//先用scanf_s获得值
+        scanf_s("%s", charNum,127);//先用scanf_s获得值
         std::string stringNum = charNum;//然后赋值给string
         if (stringNum == "y") {
             return modMax;
@@ -250,7 +250,7 @@ private:
 
 atomic<int> HasAnw = 0;
 
-void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT,int ID) {
+void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT,int ID,int nulLT) {
     int out = 1;
     int YouNeedNum;
     int Count = 0;
@@ -259,6 +259,7 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
     int pin2 = 0;
     int hel2 = 0;
     int arc2 = 0;
+    int nul2 = 0;
     if (pinLT != 0 && addLT == 0) {
         pin2 = mod;
     }
@@ -267,6 +268,9 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
     }
     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
         arc2 = mod;
+    }
+    else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+        nul2 = mod;
     }
     else {
         add2 = mod;
@@ -281,31 +285,34 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                 {
                     for (int arc = arc2; arc <= arcLT; arc++)
                     {
-                        for (int dec = 0; dec <= decLT; dec++)
+                        for (int nul = nul2; nul <= nulLT; nul++)
                         {
-                            if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
-                            Count = 0;
-                            for (int spl = 0; spl <= splLT; spl++)
+                            for (int dec = 0; dec <= decLT; dec++)
                             {
-                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 - spl * 30);
-                                if (YouNeedNum < 0 && out) {
-                                    test = startNum / 30;
-                                    if (test == 1) { out = 0; }
-                                    if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
-                                    if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
-                                    spl = test - 1;
-                                    Count++;
-                                    continue;
-                                }
-                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                    HasAnw++;//如果有了可以永久化的结果自增
-                                    if (isSaveOrNo) {
-                                        fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
+                                if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
+                                Count = 0;
+                                for (int spl = 0; spl <= splLT; spl++)
+                                {
+                                    YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 - spl * 30 + nul * 280);
+                                    if (YouNeedNum < 0 && out) {
+                                        test = startNum / 30;
+                                        if (test == 1) { out = 0; }
+                                        if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
+                                        if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
+                                        spl = test - 1;
+                                        Count++;
+                                        continue;
                                     }
-                                    else {
-                                        mtx.lock();
-                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, spl); 
-                                        mtx.unlock();
+                                    if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                        HasAnw++;//如果有了可以永久化的结果自增
+                                        if (isSaveOrNo) {
+                                            fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << ",无害射击数量:" << nul << endl;
+                                        }
+                                        else {
+                                            mtx.lock();
+                                            printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, dec, spl,nul);
+                                            mtx.unlock();
+                                        }
                                     }
                                 }
                             }
@@ -325,29 +332,32 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                 {
                     for (int arc = arc2; arc <= arcLT; arc++)
                     {
-                        if (Count > 1) { out = 1; }
-                        Count = 0;
-                        for (int dec = 0; dec <= decLT; dec++)
+                        for (int nul = nul2; nul <= nulLT; nul++)
                         {
-                            YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42);
-                            if (YouNeedNum < 0 && out) {
-                                test = startNum / 42;
-                                if (test == 1) { out = 0; }
-                                if (startNum % 42 == 0) { out = 0; }
-                                if (Count > 1) { out = 0; }
-                                dec = test - 1;
-                                Count++;
-                                continue;
-                            }
-                            if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                HasAnw++;//如果有了可以永久化的结果自增
-                                if (isSaveOrNo) {
-                                    fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
+                            if (Count > 1) { out = 1; }
+                            Count = 0;
+                            for (int dec = 0; dec <= decLT; dec++)
+                            {
+                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 + nul * 280);
+                                if (YouNeedNum < 0 && out) {
+                                    test = startNum / 42;
+                                    if (test == 1) { out = 0; }
+                                    if (startNum % 42 == 0) { out = 0; }
+                                    if (Count > 1) { out = 0; }
+                                    dec = test - 1;
+                                    Count++;
+                                    continue;
                                 }
-                                else {
-                                    mtx.lock();
-                                    printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, splLT);
-                                    mtx.unlock();
+                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                    HasAnw++;//如果有了可以永久化的结果自增
+                                    if (isSaveOrNo) {
+                                        fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << ",无害射击数量:" << nul << endl;
+                                    }
+                                    else {
+                                        mtx.lock();
+                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, dec, splLT, nul);
+                                        mtx.unlock();
+                                    }
                                 }
                             }
                         }
@@ -366,29 +376,32 @@ void threadCalc(int mod,int startNum,int endNum,int isSaveOrNo,int addLT, int pi
                 {
                     for (int arc = arc2; arc <= arcLT; arc++)
                     {
-                        if (Count > 1) { out = 1; }
-                        Count = 0;
-                        for (int spl = 0; spl <= splLT; spl++)
+                        for (int nul = nul2; nul <= nulLT; nul++)
                         {
-                            YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30);
-                            if (YouNeedNum < 0 && out) {
-                                test = startNum / 30;
-                                if (test == 1) { out = 0; }
-                                if (startNum % 30 == 0) { out = 0; }
-                                if (Count > 1) { out = 0; }
-                                spl = test - 1;
-                                Count++;
-                                continue;
-                            }
-                            if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                HasAnw++;//如果有了可以永久化的结果自增
-                                if (isSaveOrNo) {
-                                    fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
+                            if (Count > 1) { out = 1; }
+                            Count = 0;
+                            for (int spl = 0; spl <= splLT; spl++)
+                            {
+                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30 + nul * 280);
+                                if (YouNeedNum < 0 && out) {
+                                    test = startNum / 30;
+                                    if (test == 1) { out = 0; }
+                                    if (startNum % 30 == 0) { out = 0; }
+                                    if (Count > 1) { out = 0; }
+                                    spl = test - 1;
+                                    Count++;
+                                    continue;
                                 }
-                                else {
-                                    mtx.lock();
-                                    printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, decLT, spl);
-                                    mtx.unlock();
+                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                    HasAnw++;//如果有了可以永久化的结果自增
+                                    if (isSaveOrNo) {
+                                        fileCace[ID] << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << ",无害射击数量:" << nul << endl;
+                                    }
+                                    else {
+                                        mtx.lock();
+                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, decLT, spl, nul);
+                                        mtx.unlock();
+                                    }
                                 }
                             }
                         }
@@ -404,10 +417,10 @@ vector<thread> T;//动态存储线程
 vector<int> TNum;//动态存储分配后的参数
 
 int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相位弧度,splLT连锁法术
-    SetConsoleTitle(L"永久法术计算工具v1.0.8.3");//修改控制台标题
-    printf("永久法术计算工具v1.0.8.3\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
+    SetConsoleTitle(L"永久法术计算工具v1.0.9");//修改控制台标题
+    printf("永久法术计算工具v1.0.9\n\n注:乒乓回弹和盘旋魔弹影响的存在时间数值一样、相位传送和自身环绕(True Orbit)同理\n本程序的Github仓库链接:https://github.com/KagiamamaHIna/noita-infiniwisp-calculator 可以前来下最新版本或者查看源代码\n本程序使用MIT许可证\n\n");
     int startNum, endNum, modMax, addLT, pinLT, decLT, helLT, arcLT, splLT, YouNeedNum, isSaveOrNo, isFileCustOrNo = 0;
-    int closeNum = 1, test = 1;
+    int closeNum = 1, test = 1, nulLT = 0;
     int Count = 0;
     int threadNum = cfg.getParameter("threadNum");//为了减少性能消耗，获取一次赋值给一个变量
     string File2 = File;
@@ -448,6 +461,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
         decLT = getModMax("如果不需要计算红表输入n,需要计算输入y:", modMax);
         helLT = getModMax("如果不需要计算螺旋魔弹输入n,需要计算输入y:", modMax);
         arcLT = getModMax("如果不需要计算相位输入n,需要计算输入y:", modMax);
+        nulLT = getModMax("如果不需要计算无害射击(NULL SHOT)输入n,需要计算输入y:", modMax);//280
         splLT = getModMax("如果不需要计算连锁输入n,需要计算输入y:", modMax);
         if (isSaveOrNo) {
             file.open(File, ios::out | ios::app);
@@ -458,6 +472,7 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
             file << "相位上限为:" << arcLT << endl;
             file << "红表上限为:" << decLT << endl;
             file << "连锁上限为:" << splLT << endl;
+            file << "无害射击上限为:" << nulLT << endl;
         }
         //穷举计算 一共四种方案
         //方案1 两种减去时间的修正都计算，计算连锁的最小值，然后直接赋值跳过无用循环
@@ -514,6 +529,21 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
                 arcLT = TNum[0];
             }
+            else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                LT = ceil(-((float(PreNumI) - 280) / 280));//获取上限修正
+                TNum = vector<int>(threadNum);
+                threadNum2[0] = LT / threadNum;
+                threadNum2[1] = LT % threadNum;
+                for (int i = 0; i < threadNum; i++) {
+                    TNum[i] = threadNum2[0];
+                }
+                if (threadNum2[1] > 0) {
+                    for (int i = 0; i < threadNum2[1]; i++) {
+                        TNum[i]++;
+                    }
+                }
+                nulLT = TNum[0];
+            }
             else {
                 LT = ceil(-((float(PreNumI) - 75) / 75));//获取上限修正
                 TNum = vector<int>(threadNum);
@@ -539,16 +569,19 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID,nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                    }
+                    else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, arcLT, splLT, threadCaceID,count2[0]);
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     //cout << count2[1] << "/0:" << count2[0] << endl;//debug用
                 }
@@ -570,39 +603,39 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                             goto calcEnd; 
                         }*/
                         for (int arc = 0; arc <= arcLT; arc++)
-                        {/*
-                            if (addLT == 0 && pinLT == 0 && helLT == 0 && arc * 80 + PreNumI >= 80) {
-                                goto calcEnd; 
-                            }*/
-                            for (int dec = 0; dec <= decLT; dec++)
-                            {
-                                if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
-                                Count = 0;
-                                for (int spl = 0; spl <= splLT; spl++)
-                                {
-                                    YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 - spl * 30);
-                                    if (YouNeedNum < 0 && out) {
-                                        test = startNum / 30;
-                                        if (test == 1) { out = 0; }
-                                        if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
-                                        if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
-                                        spl = test - 1;
-                                        Count++;
-                                        continue;
-                                    }
-                                    if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                        HasAnw++;//如果有了可以永久化的结果自增
-                                        if (isSaveOrNo) {
-                                            file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << endl;
-                                        }
-                                        else {
-                                            mtx.lock();
-                                            printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, spl);
-                                            mtx.unlock();
-                                        }
-                                    }
-                                }
-                            }
+                        {
+                             for (int nul = 0; nul <= nulLT; nul++)
+                             {
+                                  for (int dec = 0; dec <= decLT; dec++)
+                                  {
+                                       if (Count > 1) { out = 1; }//重置out，避免优化算法永远不起作用
+                                       Count = 0;
+                                       for (int spl = 0; spl <= splLT; spl++)
+                                       {
+                                           YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 - spl * 30 + nul * 280);
+                                           if (YouNeedNum < 0 && out) {
+                                               test = startNum / 30;
+                                               if (test == 1) { out = 0; }
+                                               if (startNum % 30 == 0) { out = 0; }//如果不加这两个判断在特定条件下会陷入死循环
+                                               if (Count > 1) { out = 0; }//卡死判断，即此处连续执行超过两次就退出
+                                               spl = test - 1;
+                                               Count++;
+                                               continue;
+                                           }
+                                           if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                               HasAnw++;//如果有了可以永久化的结果自增
+                                               if (isSaveOrNo) {
+                                                   file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << spl << ",无害射击数量:" << nul << endl;
+                                               }
+                                               else {
+                                                   mtx.lock();
+                                                   printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, dec, spl,nul);
+                                                   mtx.unlock();
+                                               }
+                                           }
+                                       }
+                                  }
+                             }
                         }
                     }
                 }
@@ -661,6 +694,21 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
                 arcLT = TNum[0];
             }
+            else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                LT = ceil(-((float(PreNumI) - 280) / 280));//获取上限修正
+                TNum = vector<int>(threadNum);
+                threadNum2[0] = LT / threadNum;
+                threadNum2[1] = LT % threadNum;
+                for (int i = 0; i < threadNum; i++) {
+                    TNum[i] = threadNum2[0];
+                }
+                if (threadNum2[1] > 0) {
+                    for (int i = 0; i < threadNum2[1]; i++) {
+                        TNum[i]++;
+                    }
+                }
+                nulLT = TNum[0];
+            }
             else {
                 LT = ceil(-((float(PreNumI) - 75) / 75));//获取上限修正
                 TNum = vector<int>(threadNum);
@@ -686,16 +734,19 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                    }
+                    else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, arcLT, splLT, threadCaceID, count2[0]);
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                 }
             }
@@ -708,29 +759,32 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     {
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
-                            if (Count > 1) { out = 1; }
-                            Count = 0;
-                            for (int dec = 0; dec <= decLT; dec++)
+                            for (int nul = 0; nul <= nulLT; nul++)
                             {
-                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42);
-                                if (YouNeedNum < 0 && out) {
-                                    test = startNum / 42;
-                                    if (test == 1) { out = 0; }
-                                    if (startNum % 42 == 0) { out = 0; }
-                                    if (Count > 1) { out = 0; }
-                                    dec = test - 1;
-                                    Count++;
-                                    continue;
-                                }
-                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                    HasAnw++;//如果有了可以永久化的结果自增
-                                    if (isSaveOrNo) {
-                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << endl;
+                                if (Count > 1) { out = 1; }
+                                Count = 0;
+                                for (int dec = 0; dec <= decLT; dec++)
+                                {
+                                    YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - dec * 42 + nul*280);
+                                    if (YouNeedNum < 0 && out) {
+                                        test = startNum / 42;
+                                        if (test == 1) { out = 0; }
+                                        if (startNum % 42 == 0) { out = 0; }
+                                        if (Count > 1) { out = 0; }
+                                        dec = test - 1;
+                                        Count++;
+                                        continue;
                                     }
-                                    else {
-                                        mtx.lock();
-                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, dec, splLT);
-                                        mtx.unlock();
+                                    if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                        HasAnw++;//如果有了可以永久化的结果自增
+                                        if (isSaveOrNo) {
+                                            file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << dec << ",连锁法术数量:" << splLT << ",无害射击数量:" << nul << endl;
+                                        }
+                                        else {
+                                            mtx.lock();
+                                            printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, dec, splLT, nul);
+                                            mtx.unlock();
+                                        }
                                     }
                                 }
                             }
@@ -792,6 +846,21 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                 }
                 arcLT = TNum[0];
             }
+            else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                LT = ceil(-((float(PreNumI) - 280) / 280));//获取上限修正
+                TNum = vector<int>(threadNum);
+                threadNum2[0] = LT / threadNum;
+                threadNum2[1] = LT % threadNum;
+                for (int i = 0; i < threadNum; i++) {
+                    TNum[i] = threadNum2[0];
+                }
+                if (threadNum2[1] > 0) {
+                    for (int i = 0; i < threadNum2[1]; i++) {
+                        TNum[i]++;
+                    }
+                }
+                nulLT = TNum[0];
+            }
             else {
                 LT = ceil(-((float(PreNumI) - 75) / 75));//获取上限修正
                 TNum = vector<int>(threadNum);
@@ -817,16 +886,19 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     count2[1] = count2[0]+1;
                     count2[0] = count2[0] + TNum[i + 1];//算应该分配的范围
                     if (pinLT != 0 && addLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, count2[0], decLT, helLT, arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (helLT != 0 && addLT == 0 && pinLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, count2[0], arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                     else if (arcLT != 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, count2[0], splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                    }
+                    else if (nulLT != 0 && arcLT == 0 && addLT == 0 && pinLT == 0 && helLT == 0) {
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, addLT, pinLT, decLT, helLT, arcLT, splLT, threadCaceID, count2[0]);
                     }
                     else {
-                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
+                        T[i] = thread(threadCalc, count2[1], startNum, endNum, isSaveOrNo, count2[0], pinLT, decLT, helLT, arcLT, splLT, threadCaceID, nulLT);//int mod,int modLT,int startNum,int endNum,int isSaveOrNo,int addLT, int pinLT,int decLT,int helLT,int arcLT,int splLT
                     }
                 }
             }
@@ -839,29 +911,32 @@ int main() {//addLT蓝表,pinLT乒乓,decLT红表，helLT螺旋魔弹,arcLT相�
                     {
                         for (int arc = 0; arc <= arcLT; arc++)
                         {
-                            if (Count > 1) { out = 1; }
-                            Count = 0;
-                            for (int spl = 0; spl <= splLT; spl++)
+                            for (int nul = 0; nul <= nulLT; nul++)
                             {
-                                YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30);
-                                if (YouNeedNum < 0 && out) {
-                                    test = startNum / 30;
-                                    if (test == 1) { out = 0; }
-                                    if (startNum % 30 == 0) { out = 0; }
-                                    if (Count > 1) { out = 0; }
-                                    spl = test - 1;
-                                    Count++;
-                                    continue;
-                                }
-                                if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
-                                    HasAnw++;//如果有了可以永久化的结果自增
-                                    if (isSaveOrNo) {
-                                        file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << endl;
+                                if (Count > 1) { out = 1; }
+                                Count = 0;
+                                for (int spl = 0; spl <= splLT; spl++)
+                                {
+                                    YouNeedNum = -(75 * add + 25 * pin + 50 * hel + 80 * arc - spl * 30);
+                                    if (YouNeedNum < 0 && out) {
+                                        test = startNum / 30;
+                                        if (test == 1) { out = 0; }
+                                        if (startNum % 30 == 0) { out = 0; }
+                                        if (Count > 1) { out = 0; }
+                                        spl = test - 1;
+                                        Count++;
+                                        continue;
                                     }
-                                    else {
-                                        mtx.lock();
-                                        printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d \n", add, pin, hel, arc, decLT, spl);
-                                        mtx.unlock();
+                                    if (YouNeedNum >= startNum + 1 && YouNeedNum <= endNum + 1) {//符合条件就是可以永久化的，+1是为了排除一些不合条件的选项
+                                        HasAnw++;//如果有了可以永久化的结果自增
+                                        if (isSaveOrNo) {
+                                            file << "蓝表数量:" << add << ",乒乓数量:" << pin << ",螺旋魔弹数量:" << hel << ",相位弧度数量:" << arc << ",红表数量:" << decLT << ",连锁法术数量:" << spl << ",无害射击数量:" << nul << endl;
+                                        }
+                                        else {
+                                            mtx.lock();
+                                            printf("蓝表数量:%d ,乒乓数量:%d ,螺旋魔弹数量:%d ,相位弧度数量:%d ,红表数量:%d ,连锁法术数量:%d ,无害射击数量:%d \n", add, pin, hel, arc, decLT, spl, nul);
+                                            mtx.unlock();
+                                        }
                                     }
                                 }
                             }
